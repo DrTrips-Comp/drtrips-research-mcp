@@ -1,0 +1,36 @@
+{
+  "name": "drtrips-research-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for DrTrips research using Perplexity AI API",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "drtrips-research": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "perplexity",
+    "research",
+    "drtrips"
+  ],
+  "author": "DrTrips",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
