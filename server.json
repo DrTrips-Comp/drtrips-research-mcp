@@ -1,0 +1,21 @@
+{
+  "$schema": "https://registry.modelcontextprotocol.io/v0/server.schema.json",
+  "name": "io.github.drtrips/research-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for research capabilities using Perplexity AI via OpenRouter API. Provides intelligent research with automatic citation extraction and customizable system prompts.",
+  "homepage": "https://github.com/drtrips/research-mcp",
+  "license": "MIT",
+  "tags": [
+    "research",
+    "perplexity",
+    "ai",
+    "openrouter",
+    "citations"
+  ],
+  "deployments": {
+    "npm": {
+      "package": "drtrips-research-mcp",
+      "command": "drtrips-research"
+    }
+  }
+}

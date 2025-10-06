@@ -22,6 +22,10 @@
   ],
   "author": "DrTrips",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drtrips/research-mcp.git"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "dotenv": "^16.4.7",
