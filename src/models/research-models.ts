@@ -17,6 +17,15 @@ export type ResearchQuery = z.infer<typeof ResearchQuerySchema>;
 export interface PerplexityMessage {
   role: string;
   content: string;
+  annotations?: Array<{
+    type: string;
+    url_citation?: {
+      url: string;
+      title: string;
+      start_index: number;
+      end_index: number;
+    };
+  }>;
 }
 
 export interface PerplexityChoice {
@@ -43,4 +52,23 @@ export interface PerplexityResponse {
   citations?: string[];
   object: string;
   choices: PerplexityChoice[];
+}
+
+export interface ResearchUsage {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+}
+
+export interface ResearchMetadata {
+  model: string;
+  finish_reason: string;
+  usage: ResearchUsage;
+  citations: string[];
+  total_sources: number;
+}
+
+export interface ResearchResult {
+  text: string;
+  metadata: ResearchMetadata;
 }

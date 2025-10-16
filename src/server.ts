@@ -8,7 +8,7 @@ export function createMcpServer(): Server {
   const server = new Server(
     {
       name: 'drtrips-research-mcp',
-      version: '1.0.0'
+      version: '1.0.1'
     },
     {
       capabilities: {
@@ -43,16 +43,21 @@ export function createMcpServer(): Server {
       // Perform research
       const result = await perplexityClient.research(validated);
 
-      // Return formatted result
+      // Return formatted result with structured metadata
       return {
         content: [{
           type: 'text',
-          text: result
+          text: result.text
         }],
         metadata: {
           query: validated.query,
           systemprompt: validated.systemprompt || 'default',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          model: result.metadata.model,
+          usage: result.metadata.usage,
+          citations: result.metadata.citations,
+          total_sources: result.metadata.total_sources,
+          finish_reason: result.metadata.finish_reason
         }
       };
 

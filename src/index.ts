@@ -2,7 +2,7 @@
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { createMcpServer } from './server.js';
-import { PERPLEXITY_API_KEY, MODEL_USE } from './config/settings.js';
+import { OPENROUTER_API_KEY, MODEL_USE } from './config/settings.js';
 
 /**
  * Main entry point for DrTrips Research MCP server
@@ -11,8 +11,8 @@ import { PERPLEXITY_API_KEY, MODEL_USE } from './config/settings.js';
 async function runServer() {
   try {
     // Validate API key
-    if (!PERPLEXITY_API_KEY) {
-      console.error('❌ Fatal Error: PERPLEXITY_API_KEY not set');
+    if (!OPENROUTER_API_KEY) {
+      console.error('❌ Fatal Error: OPENROUTER_API_KEY not set');
       console.error('Please set it in your .env file or environment variables');
       process.exit(1);
     }
