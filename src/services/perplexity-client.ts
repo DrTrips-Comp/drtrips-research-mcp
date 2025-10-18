@@ -1,5 +1,6 @@
 import type { ResearchQuery, PerplexityResponse, ResearchResult } from '../models/research-models.js';
-import { OPENROUTER_API_KEY, PERPLEXITY_BASE_URL, MODEL_USE } from '../config/settings.js';
+import { ResponseFormat } from '../models/research-models.js';
+import { OPENROUTER_API_KEY, PERPLEXITY_BASE_URL, MODEL_USE, CHARACTER_LIMIT } from '../config/settings.js';
 
 export class PerplexityClient {
   private readonly apiKey: string;
@@ -61,7 +62,7 @@ export class PerplexityClient {
 
       const data = await response.json() as PerplexityResponse;
 
-      return this.formatResponse(data, input.query);
+      return this.formatResponse(data, input.query, input.response_format || ResponseFormat.MARKDOWN);
 
     } catch (error) {
       if (error instanceof Error) {
@@ -74,7 +75,7 @@ export class PerplexityClient {
   /**
    * Format the Perplexity API response
    */
-  private formatResponse(data: PerplexityResponse, query: string): ResearchResult {
+  private formatResponse(data: PerplexityResponse, query: string, format: ResponseFormat): ResearchResult {
     // Handle both direct citations array and OpenRouter annotations format
     let citations: string[] = [];
     if (Array.isArray(data.citations)) {
@@ -110,37 +111,64 @@ export class PerplexityClient {
     }
 
     const choice = data.choices[0];
-    let content = choice.message.content;
+    const totalTokens = usage.total_tokens ?? ((usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0));
 
-    // Append citations if available
-    if (citations.length > 0) {
-      content += '\n\n📚 **Citations:**\n';
-      citations.forEach((citation, index) => {
-        content += `[${index + 1}] ${citation}\n`;
-      });
+    const metadata = {
+      model: data.model,
+      finish_reason: choice.finish_reason ?? 'unknown',
+      usage: {
+        input_tokens: usage.prompt_tokens ?? 0,
+        output_tokens: usage.completion_tokens ?? 0,
+        total_tokens: totalTokens
+      },
+      citations,
+      total_sources: citations.length
+    };
+
+    let content: string;
+
+    if (format === ResponseFormat.JSON) {
+      // JSON format - machine-readable structured data
+      const jsonResponse = {
+        answer: choice.message.content,
+        citations: citations,
+        model: data.model,
+        finish_reason: choice.finish_reason,
+        usage: metadata.usage,
+        total_sources: citations.length
+      };
+      content = JSON.stringify(jsonResponse, null, 2);
+    } else {
+      // MARKDOWN format - human-readable (default)
+      content = choice.message.content;
+
+      // Append citations if available
+      if (citations.length > 0) {
+        content += '\n\n📚 **Citations:**\n';
+        citations.forEach((citation, index) => {
+          content += `[${index + 1}] ${citation}\n`;
+        });
+      }
+
+      // Add metadata footer (presentation only)
+      content += '\n\n---\n';
+      content += `🔍 **Query:** ${query}\n`;
+      content += `🤖 **Model:** ${data.model}\n`;
+      content += `✅ **Finish Reason:** ${choice.finish_reason}`;
     }
 
-    // Add metadata footer (presentation only)
-    content += '\n\n---\n';
-    content += `🔍 **Query:** ${query}\n`;
-    content += `🤖 **Model:** ${data.model}\n`;
-    content += `✅ **Finish Reason:** ${choice.finish_reason}`;
+    // Apply character limit protection
+    if (content.length > CHARACTER_LIMIT) {
+      const truncateMessage = format === ResponseFormat.JSON
+        ? `\n\n[Response truncated from ${content.length} to ${CHARACTER_LIMIT} characters. Please refine your query to get more focused results.]`
+        : `\n\n⚠️ **Response Truncated**\nOriginal length: ${content.length} characters\nTruncated to: ${CHARACTER_LIMIT} characters\n\nPlease refine your query or use more specific search terms to get more focused results.`;
 
-    const totalTokens = usage.total_tokens ?? ((usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0));
+      content = content.substring(0, CHARACTER_LIMIT - truncateMessage.length) + truncateMessage;
+    }
 
     return {
       text: content,
-      metadata: {
-        model: data.model,
-        finish_reason: choice.finish_reason ?? 'unknown',
-        usage: {
-          input_tokens: usage.prompt_tokens ?? 0,
-          output_tokens: usage.completion_tokens ?? 0,
-          total_tokens: totalTokens
-        },
-        citations,
-        total_sources: citations.length
-      }
+      metadata
     };
   }
 }

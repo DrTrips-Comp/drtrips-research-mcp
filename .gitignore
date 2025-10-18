@@ -8,7 +8,9 @@ node_modules/
 
 # TypeScript
 *.tsbuildinfo
-dist/
+
+# Build output (keep for npm package)
+# dist/ is needed for npm package, so we keep it
 
 # Logs
 *.log
@@ -31,3 +33,8 @@ Thumbs.db
 .mcp.json
 CLAUDE.md
 .claude/
+
+# Testing and evaluation files (not for production)
+evaluations/
+*.eval.xml
+test-*.json

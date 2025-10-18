@@ -1,0 +1,49 @@
+# Source files (compiled output in dist/ is enough)
+src/
+tsconfig.json
+*.tsbuildinfo
+
+# Development and testing
+evaluations/
+*.eval.xml
+test-*.json
+.mcp.json
+
+# Environment and configuration
+.env
+.env.*
+.env.example
+
+# Documentation and development files
+.claude/
+.github/
+.vscode/
+.idea/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Keep these files for npm package:
+# - dist/           (compiled JavaScript - REQUIRED)
+# - package.json    (package manifest - REQUIRED)
+# - README.md       (documentation - REQUIRED)
+# - LICENSE         (license - REQUIRED)
+# - server.json     (MCP registry metadata - REQUIRED)

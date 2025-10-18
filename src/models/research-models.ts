@@ -1,13 +1,30 @@
 import { z } from 'zod';
 
 /**
+ * Response format options
+ */
+export enum ResponseFormat {
+  MARKDOWN = "markdown",
+  JSON = "json"
+}
+
+/**
  * Schema for Research Query
- * Simplified model with only query and systemprompt
+ * Enhanced with validation and response format support
  */
 export const ResearchQuerySchema = z.object({
-  query: z.string().min(1).describe('The research query or question to search for'),
-  systemprompt: z.string().optional().describe('Optional system prompt to customize the research behavior')
-});
+  query: z.string()
+    .min(2, "Query must be at least 2 characters")
+    .max(500, "Query must not exceed 500 characters")
+    .describe('The research query or question to search for'),
+  systemprompt: z.string()
+    .max(2000, "System prompt must not exceed 2000 characters")
+    .optional()
+    .describe('Optional system prompt to customize the research behavior'),
+  response_format: z.nativeEnum(ResponseFormat)
+    .default(ResponseFormat.MARKDOWN)
+    .describe("Output format: 'markdown' for human-readable or 'json' for machine-readable")
+}).strict();
 
 export type ResearchQuery = z.infer<typeof ResearchQuerySchema>;
 
